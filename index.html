@@ -1,0 +1,679 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>공통영어2 3·4과 단어 3단계</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=IBM+Plex+Sans+KR:wght@400;500;700&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+html{-webkit-text-size-adjust:100%}body{margin:0}[hidden]{display:none!important}
+/* Layout: one narrow phone-first column; a 3-step rail on top, stage colors encode 본단어 / 유 / 반 like the workbook badges */
+:root{
+  --bg:#F3F5F8; --surface:#FFFFFF; --ink:#17202E; --muted:#5D6778; --line:#DCE1E9;
+  --main:#2F4DBE; --main-soft:#E6EBFB;
+  --syn:#13795B; --syn-soft:#DEF2EA;
+  --ant:#C23A2B; --ant-soft:#FBE5E2;
+  --ok:#13795B; --bad:#C23A2B; --warn:#9A6400;
+  --f-display:"Bricolage Grotesque", "IBM Plex Sans KR", system-ui, sans-serif;
+  --f-body:"IBM Plex Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
+  --f-mono:"IBM Plex Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#10141B; --surface:#181E28; --ink:#E9EDF3; --muted:#9AA4B5; --line:#2A3342;
+  --main:#8EA4FF; --main-soft:#1F2A4D; --syn:#5FD3A6; --syn-soft:#123629; --ant:#FF8C7D; --ant-soft:#3D1D19;
+  --ok:#5FD3A6; --bad:#FF8C7D; --warn:#F0BE5C; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#10141B; --surface:#181E28; --ink:#E9EDF3; --muted:#9AA4B5; --line:#2A3342;
+  --main:#8EA4FF; --main-soft:#1F2A4D; --syn:#5FD3A6; --syn-soft:#123629; --ant:#FF8C7D; --ant-soft:#3D1D19;
+  --ok:#5FD3A6; --bad:#FF8C7D; --warn:#F0BE5C; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased}
+.wrap{max-width:640px;margin:0 auto;padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px));padding-block:20px 48px;display:flex;flex-direction:column;gap:18px}
+h1,h2,h3{margin:0;text-wrap:balance;line-height:1.25}
+h1{font-size:1.5rem;font-weight:700}
+h2{font-size:1.2rem;font-weight:700}
+p{margin:0}
+.muted{color:var(--muted)}
+.small{font-size:.875rem}
+.label{font-size:.75rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:500}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:3px solid var(--main);outline-offset:2px}
+.btn{border:0;border-radius:12px;padding:13px 18px;font-weight:700;background:var(--main);color:#fff;font-size:1rem}
+:root[data-theme="dark"] .btn{color:#0E1420}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .btn{color:#0E1420}}
+.btn.syn{background:var(--syn)} .btn.ant{background:var(--ant)}
+.btn.ghost{background:transparent;color:var(--ink);border:1.5px solid var(--line)}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn.block{width:100%}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.brand{font-family:var(--f-display);font-weight:800;font-size:1.05rem;letter-spacing:-.01em}
+.linkbtn{background:none;border:0;color:var(--muted);font-size:.875rem;text-decoration:underline;padding:6px}
+input[type=text],textarea,select{width:100%;font:inherit;color:var(--ink);background:var(--surface);border:1.5px solid var(--line);border-radius:12px;padding:12px 14px}
+textarea{font-family:var(--f-mono);font-size:.8rem;min-height:140px;resize:vertical}
+.field{display:flex;flex-direction:column;gap:6px}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:18px;display:flex;flex-direction:column;gap:14px}
+
+/* unit picker */
+.units{display:grid;gap:12px}
+.unit{display:flex;flex-direction:column;gap:4px;text-align:left;background:var(--surface);border:1.5px solid var(--line);border-radius:16px;padding:16px 18px}
+.unit[aria-pressed="true"]{border-color:var(--main);box-shadow:0 0 0 3px var(--main-soft)}
+.unit .en{font-family:var(--f-display);font-weight:700;font-size:1.15rem}
+
+/* step rail */
+.rail{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.step{display:flex;flex-direction:column;gap:10px;text-align:left;background:var(--surface);border:1.5px solid var(--line);border-radius:14px;padding:14px;min-width:0}
+.step .badge{width:30px;height:30px;border-radius:8px;display:grid;place-items:center;font-weight:700;font-size:.95rem}
+.step.s1 .badge{background:var(--main-soft);color:var(--main)}
+.step.s2 .badge{background:var(--syn-soft);color:var(--syn)}
+.step.s3 .badge{background:var(--ant-soft);color:var(--ant)}
+.step .name{font-weight:700}
+.step .st{font-size:.8rem;color:var(--muted);font-variant-numeric:tabular-nums}
+.step.locked{opacity:.5}
+.step.done .st{color:var(--ok);font-weight:500}
+@media (max-width:420px){.step{padding:12px 10px}.step .name{font-size:.92rem}}
+
+/* study cards */
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:space-between}
+.seg{display:inline-flex;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:3px}
+.seg button{border:0;background:none;padding:7px 12px;border-radius:8px;font-size:.875rem;color:var(--muted)}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.cards{display:flex;flex-direction:column;gap:8px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 16px;display:grid;grid-template-columns:2.2rem 1fr;gap:4px 10px;text-align:left;width:100%}
+.card .no{font-family:var(--f-mono);font-size:.75rem;color:var(--muted);padding-top:5px}
+.card .hw{font-family:var(--f-display);font-weight:700;font-size:1.25rem;letter-spacing:-.01em;min-width:0;overflow-wrap:anywhere}
+.card .pos{font-family:var(--f-mono);font-size:.75rem;color:var(--muted);margin-left:6px;font-weight:500}
+.card .body{grid-column:2;display:flex;flex-direction:column;gap:6px;min-width:0}
+.card .ko{font-weight:500}
+.card .ex{font-size:.85rem;color:var(--muted);font-style:italic}
+.chips{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.chip{font-size:.85rem;padding:3px 9px;border-radius:7px;font-weight:500}
+.tag{font-size:.75rem;font-weight:700;width:22px;height:22px;border-radius:6px;display:inline-grid;place-items:center}
+.tag.syn,.chip.syn{background:var(--syn-soft);color:var(--syn)}
+.tag.ant,.chip.ant{background:var(--ant-soft);color:var(--ant)}
+.cover{background:repeating-linear-gradient(135deg,var(--line) 0 6px,transparent 6px 12px);color:transparent;border-radius:6px;user-select:none}
+.card .tap{font-size:.75rem;color:var(--muted)}
+
+/* quiz */
+.qhead{display:flex;justify-content:space-between;align-items:center;font-variant-numeric:tabular-nums}
+.bar{height:6px;background:var(--line);border-radius:99px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--main);transition:width .25s}
+.bar.syn i{background:var(--syn)} .bar.ant i{background:var(--ant)}
+.qcard{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:26px 20px;display:flex;flex-direction:column;gap:8px;align-items:center;text-align:center}
+.qcard .prompt{font-size:.9rem;color:var(--muted)}
+.qcard .big{font-family:var(--f-display);font-weight:800;font-size:clamp(1.7rem,7vw,2.4rem);letter-spacing:-.02em;line-height:1.15;overflow-wrap:anywhere}
+.qcard .big.kr{font-family:var(--f-body);font-weight:700;font-size:clamp(1.25rem,5vw,1.6rem)}
+.opts{display:flex;flex-direction:column;gap:10px}
+.opt{display:grid;grid-template-columns:28px 1fr;gap:10px;align-items:center;text-align:left;background:var(--surface);border:1.5px solid var(--line);border-radius:14px;padding:14px 16px;font-size:1.02rem;min-height:56px}
+.opt .k{font-family:var(--f-mono);font-size:.8rem;color:var(--muted);border:1px solid var(--line);border-radius:6px;width:24px;height:24px;display:grid;place-items:center}
+.opt.en{font-family:var(--f-display);font-weight:500;font-size:1.1rem}
+.opt.right{border-color:var(--ok);background:var(--syn-soft)}
+.opt.wrong{border-color:var(--bad);background:var(--ant-soft)}
+.opt:disabled{cursor:default}
+.feedback{min-height:1.5em;text-align:center;font-weight:700}
+.feedback.ok{color:var(--ok)} .feedback.no{color:var(--bad)}
+
+/* results */
+.score{display:flex;align-items:baseline;gap:8px;font-variant-numeric:tabular-nums}
+.score b{font-family:var(--f-display);font-size:3rem;font-weight:800;line-height:1}
+.wrongs{display:flex;flex-direction:column;border-top:1px solid var(--line)}
+.wrongs div{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.3fr);gap:10px;padding:10px 0;border-bottom:1px solid var(--line);font-size:.92rem}
+.wrongs .w{font-family:var(--f-display);font-weight:700}
+.codebox{font-family:var(--f-mono);font-size:.78rem;background:var(--bg);border:1px dashed var(--line);border-radius:10px;padding:12px;white-space:pre-wrap;overflow-wrap:anywhere;user-select:all}
+.notice{font-size:.875rem;padding:10px 12px;border-radius:10px;background:var(--main-soft);color:var(--ink)}
+
+/* teacher */
+.tbl-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:.9rem;font-variant-numeric:tabular-nums}
+th,td{padding:10px 12px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap}
+th{font-size:.75rem;color:var(--muted);font-weight:500;letter-spacing:.04em}
+tr:last-child td{border-bottom:0}
+td.n{text-align:right}
+.pill{display:inline-block;font-size:.75rem;padding:2px 8px;border-radius:99px;font-weight:700}
+.pill.lo{background:var(--ant-soft);color:var(--ant)} .pill.mid{background:var(--main-soft);color:var(--main)} .pill.hi{background:var(--syn-soft);color:var(--syn)}
+.pill.warn{background:var(--ant-soft);color:var(--warn)}
+.sheet{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:12px}
+.sheet h3{font-size:1rem}
+.sheet ol{margin:0;padding-left:1.4rem;display:flex;flex-direction:column;gap:6px}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(20px + env(safe-area-inset-bottom, 0px));background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:10px;font-size:.9rem;z-index:20}
+@media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+</head>
+<body>
+<div class="wrap" id="app"></div>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+/* ═══════ 설정: Apps Script 웹 앱 주소를 따옴표 안에 붙여 넣으세요 ═══════ */
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzOhNIkVb9tz1i1R849gyxuiRy4Dv5QRtd-K5upWXmhEF8zWTWiyFQWzOX4iVkLzXcwxQ/exec";
+/* ═════════════════════════════════════════════════════════════════════ */
+
+/* ───────── 단어 데이터 (워크북 그대로) ───────── */
+const UNITS = {
+  "3": { title:"A Timeless Symbol of Korea", sub:"공통영어2 능률(민) 3과", words: [
+["timeless","adj.","영원한, 시대를 초월한",["eternal","enduring"],["transient","ephemeral"],"A Timeless Symbol of Korea"],
+["symbol","n.","상징, 기호",["emblem","icon"],[],"A Timeless Symbol of Korea"],
+["publish","v.","출판하다, 발표하다",["issue","release"],["suppress","withhold"],"Writer Tae Keller published her book When You Trap a Tiger in 2020."],
+["trap","v./n.","덫으로 잡다, 가두다 / 덫, 함정",["ensnare","capture"],["release","free"],"Writer Tae Keller published her book When You Trap a Tiger in 2020."],
+["make a deal","phr.","거래하다, 협상하다",["strike a bargain","negotiate"],[],"When her grandmother gets sick, the girl makes a deal with the tiger."],
+["inspiration","n.","영감, 영감을 주는 것",["stimulus","muse"],[],"Keller's inspiration for her award-winning book was an old folktale."],
+["award-winning","adj.","상을 받은, 수상작인",["acclaimed","celebrated"],["obscure","unrecognized"],"Keller's inspiration for her award-winning book was an old folktale."],
+["folktale","n.","설화, 민간 설화",["legend","fable"],[],"…an old folktale that her halmoni used to tell her."],
+["revive","v.","되살리다, 부활시키다",["rekindle","resurrect"],["suppress","extinguish"],"Keller wanted to revive the public's interest in tigers by writing her own book."],
+["public","n./adj.","대중, 일반인 / 공공의",["populace","community"],["private","individual"],"Keller wanted to revive the public's interest in tigers."],
+["be related to","phr.","~와 관련이 있다",["be associated with","be linked to"],["be unrelated to"],"How is the tiger related to Korean culture?"],
+["abundant","adj.","풍부한, 많은",["plentiful","copious"],["scarce","sparse"],"Long ago, tigers were so abundant in Korea that people often called the country the \"Land of Tigers.\""],
+["estimate","v./n.","추정하다 / 추정(치)",["approximate","gauge"],["calculate exactly"],"It is estimated that tigers lived in Korea for at least 100,000 years."],
+["appearance","n.","외모 · [지문] 등장, 출현",["emergence","advent"],["disappearance"],"The first appearance of a tiger in Korean culture dates back to the rock art of the Bronze Age."],
+["date back to","phr.","(시기가) ~로 거슬러 올라가다",["originate in","go back to"],[],"The first appearance of a tiger in Korean culture dates back to the rock art of the Bronze Age."],
+["depict","v.","묘사하다, 그리다",["portray","represent"],["misrepresent","distort"],"It depicts people hunting various animals, including tigers."],
+["various","adj.","다양한, 여러 가지의",["diverse","assorted"],["uniform","homogeneous"],"It depicts people hunting various animals, including tigers."],
+["aspect","n.","측면, 양상",["facet","dimension"],[],"Tigers have appeared in many aspects of Korean culture."],
+["legend","n.","전설, 전설적인 인물",["myth","lore"],["fact","history"],"…from legends to art and musical instruments."],
+["feature","v./n.","특징 · [지문] ~을 주인공으로 하다, 등장시키다",["showcase","star"],["exclude","omit"],"Some of you may have heard Korean folktales featuring tigers."],
+["approximately","adv.","대략, 약",["roughly","about"],["exactly","precisely"],"Approximately forty percent of Korean folktales about animals include a tiger."],
+["in a positive light","phr.","긍정적으로",["favorably","approvingly"],["in a negative light","unfavorably"],"Tigers in Korean folktales are sometimes shown in a positive light."],
+["foolish","adj.","어리석은, 바보 같은",["absurd","imprudent"],["wise","sensible"],"…and sometimes as foolish creatures."],
+["creature","n.","생물, 동물, 피조물",["being","organism"],[],"Tigers are sometimes shown as foolish creatures."],
+["mistakenly","adv.","잘못하여, 오해하여",["erroneously","wrongly"],["correctly","rightly"],"The tiger mistakenly thinks the gotgam is a very scary creature and runs away."],
+["conflicting","adj.","상충하는, 모순되는, 엇갈리는",["contradictory","ambivalent"],["consistent","harmonious"],"It seems that people at the time had conflicting feelings about tigers."],
+["respect","n./v.","존경, 존중 / 존경하다",["reverence","esteem"],["contempt","disdain"],"They had respect for tigers' power and courage."],
+["courage","n.","용기",["bravery","valor"],["cowardice","timidity"],"They had respect for tigers' power and courage."],
+["injure","v.","다치게 하다, 부상을 입히다",["wound","maim"],["heal","cure"],"Being injured or even killed by tigers was common in the past."],
+["decline","n./v.","감소, 쇠퇴 / 감소하다, 거절하다",["decrease","dwindling"],["increase","growth"],"Tigers in Korea faced a decline in population due to hunting."],
+["population","n.","인구 · [지문] (동물의) 개체 수",["numbers","inhabitants"],[],"Tigers in Korea faced a decline in population due to hunting."],
+["due to","phr.","~ 때문에, ~으로 인해",["owing to","on account of"],["in spite of"],"…a decline in population due to hunting during the Joseon period."],
+["extinct","adj.","멸종된, 사라진",["vanished","defunct"],["extant","thriving"],"Tigers nearly went extinct during the Japanese colonial era."],
+["nearly","adv.","거의, 하마터면",["virtually","all but"],["entirely","completely"],"Tigers nearly went extinct during the Japanese colonial era."],
+["colonial","adj.","식민지의, 식민 시대의",["imperial"],["independent","sovereign"],"Tigers nearly went extinct during the Japanese colonial era."],
+["disappearance","n.","사라짐, 소멸, 실종",["vanishing","extinction"],["appearance","emergence"],"With the disappearance of tigers in Korea, their use as a symbol of the nation faded away."],
+["fade away","phr.","서서히 사라지다, 희미해지다",["dwindle","dissipate"],["intensify","strengthen"],"…their use as a symbol of the nation faded away."],
+["symbolism","n.","상징성, 상징적 의미",["significance","connotation"],[],"Their symbolism was revived in modern times."],
+["selection","n.","선발, 선택, 선정",["choice","designation"],["rejection","elimination"],"…through their selection as the mascot for both Olympics hosted by Korea."],
+["host","v./n.","개최하다, 주최하다 / 주인, 진행자",["stage","organize"],["attend"],"…both Olympics hosted by Korea."],
+["represent","v.","대표하다 · [지문] 상징하다, 나타내다",["symbolize","embody"],[],"It was a Siberian tiger, which represents courage."],
+["sacred","adj.","신성한, 성스러운",["holy","hallowed"],["profane","secular"],"White tigers are considered sacred guardians."],
+["guardian","n.","수호자, 보호자",["protector","custodian"],["attacker","assailant"],"White tigers are considered sacred guardians."],
+["mention","v./n.","언급하다 / 언급",["refer to","allude to"],["omit","ignore"],"Tigers are also mentioned in the K-pop song \"Tiger is Coming.\""],
+["verse","n.","(노래의) 절, 운문, 시",["stanza","passage"],["prose","chorus"],"One verse of the song is a reinterpreted version of \"Sugungga.\""],
+["reinterpret","v.","재해석하다",["reimagine","adapt"],[],"One verse of the song is a reinterpreted version of \"Sugungga.\""],
+["draw attention","phr.","관심을 끌다",["attract attention","captivate"],["go unnoticed"],"The song drew worldwide attention."],
+["report","v./n.","보고하다, 보도하다 / 보고(서)",["document","record"],["conceal","suppress"],"Only a few wild tigers have been reported to be living in North Korea."],
+["deny","v.","부인하다, 부정하다, 거부하다",["refute","dispute"],["affirm","acknowledge"],"Who can deny that the tiger is a symbol of Korea?"],
+["have a place","phr.","자리를 차지하다, 존재하다",["endure","persist"],["vanish","be forgotten"],"The history, stories, and cultural meaning of tigers still have a place among modern Korean people."]
+  ], groups:[
+    ["folktale","legend"],["depict","represent","symbol","symbolism"],["decline","fade away","disappearance","extinct","have a place"],
+    ["approximately","nearly","estimate"],["timeless","have a place"],["publish","report","mention","revive"],["trap","publish"],
+    ["appearance","disappearance","feature"],["respect","courage"],["award-winning","draw attention"],["foolish","mistakenly"],["deny","conflicting"]
+  ]},
+  "4": { title:"Looking to Nature for Help", sub:"공통영어2 NE능률 4과", words: [
+["look to","phr.","~에 기대하다, ~에 의지하다",["rely on","turn to"],["disregard"],"Looking to Nature for Help"],
+["disaster","n.","재해, 재난, 참사",["catastrophe","calamity"],["blessing","boon"],"Natural disasters such as forest fires and floods are increasing."],
+["in particular","phr.","특히",["especially","notably"],["in general"],"Plastic, in particular, is causing problems with soil and water pollution."],
+["pollution","n.","오염, 공해",["contamination","degradation"],["purification"],"Plastic is causing problems with soil and water pollution."],
+["contributor","n.","원인 제공자, 기여자, 기고가",["cause","factor"],[],"It is clear that humans are a major contributor to the destruction of nature."],
+["destruction","n.","파괴, 파멸",["devastation","ruin"],["preservation","restoration"],"…a major contributor to the destruction of nature."],
+["stop A from -ing","phr.","A가 ~하지 못하게 막다",["prevent A from","keep A from"],["allow A to","enable A to"],"Can we stop climate change from reaching dangerous levels?"],
+["achieve","v.","달성하다, 성취하다",["accomplish","attain"],["fail","forfeit"],"Achieving these goals seems difficult."],
+["single-use","adj.","일회용의",["disposable","throwaway"],["reusable","durable"],"About fifty percent of plastic is produced for single-use products."],
+["discard","v.","버리다, 폐기하다",["dispose of","jettison"],["retain","preserve"],"The items are used just once and then discarded."],
+["landfill","n.","쓰레기 매립지",["dump","waste site"],[],"Recycling can help reduce the amount of plastic in our landfills."],
+["dump","v./n.","(쓰레기를) 버리다 / 쓰레기장",["dispose of","unload"],["collect","recycle"],"Often, plastic waste is moved to places where it is just dumped or burned."],
+["furthermore","adv.","더욱이, 게다가",["moreover","in addition"],["nevertheless"],"Furthermore, between 8 and 14 million metric tons of plastic end up in the ocean every year."],
+["end up","phr.","결국 ~에 이르다, 결국 ~하게 되다",["wind up","land up"],[],"…plastic end up in the ocean every year."],
+["marine","adj.","바다의, 해양의",["oceanic","aquatic"],["terrestrial","land"],"This puts many marine species in danger."],
+["species","n.","(생물의) 종",["breed","variety"],[],"This puts many marine species in danger."],
+["larva","n.","애벌레, 유충 (복수형: larvae)",["grub","maggot"],["adult insect"],"Mealworms are the larvae of a certain species of beetle."],
+["break down","phr.","고장 나다 · [지문] 분해하다",["decompose","dissolve"],["synthesize","assemble"],"These bacteria can break down plastic."],
+["feed on","phr.","~을 먹고 살다, ~을 먹이로 하다",["consume","subsist on"],[],"This means that mealworms can actually feed on plastic."],
+["speed up","phr.","속도를 높이다, 가속화하다",["accelerate","expedite"],["slow down","decelerate"],"They also want to speed up the process by which the bacteria break down plastic."],
+["cultivate","v.","경작하다 · [지문] (세균 등을) 배양하다",["culture","breed"],["eradicate","destroy"],"Scientists are now looking for ways to cultivate the bacteria outside of mealworms."],
+["purify","v.","정화하다, 깨끗하게 하다",["cleanse","decontaminate"],["contaminate","pollute"],"Purifying Polluted Soil"],
+["mining","n.","채굴, 광업",["excavation","extraction"],[],"Mining and other industries are causing soil pollution across the globe."],
+["dig up","phr.","파내다, 캐내다",["excavate","unearth"],["bury","inter"],"Although polluted soil can be dug up and transported to a landfill, this process is expensive."],
+["transport","v./n.","수송하다, 운반하다 / 수송",["convey","haul"],["leave in place"],"Polluted soil can be dug up and transported to a landfill."],
+["moreover","adv.","게다가, 더욱이",["furthermore","besides"],["however"],"Moreover, it only moves the problem to another area and does not really solve it."],
+["eco-friendly","adj.","친환경적인",["environmentally sound","sustainable"],["polluting","harmful"],"There is an eco-friendly and cost-effective way to restore polluted soil."],
+["cost-effective","adj.","비용 효율적인, 경제적인",["economical","efficient"],["costly","wasteful"],"There is an eco-friendly and cost-effective way to restore polluted soil."],
+["restore","v.","회복시키다, 복원하다",["rehabilitate","revive"],["damage","degrade"],"…a way to restore polluted soil."],
+["extensive","adj.","광범위한, 넓은, 대규모의",["expansive","far-reaching"],["limited","confined"],"These amazing trees have extensive and well-developed root systems."],
+["extract","v.","추출하다, 뽑아내다",["draw out","remove"],["insert","infuse"],"They naturally extract a wide range of harmful materials from the soil."],
+["harmful","adj.","해로운, 유해한",["detrimental","noxious"],["harmless","benign"],"They naturally extract a wide range of harmful materials from the soil."],
+["acidity","n.","산성(도)",["sourness"],["alkalinity"],"They can grow quickly, even in soil with a high acidity level."],
+["effectiveness","n.","효과(성), 유효성",["efficacy","potency"],["ineffectiveness","futility"],"Research on the effectiveness of using willow trees for this purpose is in development."],
+["absorb","v.","흡수하다, 열중하게 하다",["soak up","assimilate"],["emit","discharge"],"Some species of willow trees are able to absorb harmful materials better than others."],
+["promising","adj.","유망한, 장래성 있는",["auspicious","encouraging"],["unpromising","bleak"],"This promising area should be further explored."],
+["explore","v.","탐험하다, 탐구하다",["investigate","probe"],["neglect","ignore"],"This promising area should be further explored to find out which trees are the most effective."],
+["statistics","n.","통계(학), 통계 자료",["data","figures"],[],"Statistics show that about thirty to forty percent of people in the world drink coffee each day."],
+["generate","v.","발생시키다, 만들어 내다",["produce","yield"],["eliminate","consume"],"The coffee-making process, however, generates used coffee grounds."],
+["grounds","n.","근거, 땅 · [지문] (커피) 찌꺼기",["residue","sediment"],[],"The coffee-making process generates used coffee grounds."],
+["greenhouse gas","n.","온실가스",["heat-trapping gas"],[],"There, they can create a harmful greenhouse gas."],
+["emission","n.","배출(물), 방출",["discharge","release"],["absorption","intake"],"We can reduce greenhouse gas emissions by turning used coffee grounds into biofuel."],
+["biofuel","n.","바이오 연료 (생물 연료)",["renewable fuel"],["fossil fuel"],"Biofuel is a natural fuel that is made from plant or animal sources."],
+["algae","n.","조류, 말 (단수형: alga)",["seaweed","phytoplankton"],[],"Researchers have found that they can grow algae on old coffee grounds."],
+["nutrient","n.","영양분, 영양소",["nourishment","sustenance"],["toxin"],"They can grow algae on old coffee grounds without adding any other nutrients."],
+["be exposed to","phr.","~에 노출되다",["be subjected to"],["be shielded from","be protected from"],"If these algae are exposed to twenty hours of light, they eventually produce high-quality biofuel."],
+["eventually","adv.","결국, 마침내",["ultimately","in the end"],["initially","at first"],"They eventually produce high-quality biofuel."],
+["renewable","adj.","재생 가능한, 갱신 가능한",["replenishable","inexhaustible"],["nonrenewable","finite"],"The biofuel is renewable and sustainable."],
+["sustainable","adj.","지속 가능한",["viable","eco-friendly"],["unsustainable","depleting"],"The biofuel is renewable and sustainable, and it creates only a small amount of emissions."],
+["currently","adv.","현재, 지금",["presently","at present"],["formerly","previously"],"There could be many more possible solutions to the problems we currently face."],
+["face","v./n.","얼굴 · [지문] (문제에) 직면하다",["confront","grapple with"],["evade","sidestep"],"…the problems we currently face."],
+["in return","phr.","보답으로, 대신에",["in exchange","reciprocally"],[],"In return, we need to look for more ways to keep the environment healthy and clean."],
+["after all","phr.","결국, 어쨌든",["in the end","ultimately"],[],"If we do, the future of our planet may be bright after all."]
+  ], groups:[
+    ["furthermore","moreover"],["discard","dump","landfill","single-use"],["pollution","purify","harmful","eco-friendly","sustainable","renewable","biofuel"],
+    ["eco-friendly","cost-effective","sustainable"],["eventually","after all","end up"],["destruction","restore","disaster","harmful"],
+    ["mining","dig up","extract"],["absorb","emission","greenhouse gas"],["cultivate","species"],["feed on","generate","break down"],
+    ["face","explore"],["effectiveness","cost-effective","promising"],["currently","eventually"],["achieve","restore"],["extract","absorb"]
+  ]}
+};
+for (const u of Object.values(UNITS)) {
+  u.list = u.words.map((r,i)=>({id:i+1,w:r[0],pos:r[1],ko:r[2],syn:r[3],ant:r[4],ex:r[5]}));
+  const g = {}; u.groups.forEach((grp,gi)=>grp.forEach(w=>{(g[w] ||= new Set()).add(gi)}));
+  u.near = (a,b)=>{ if(a.w===b.w) return true; const ga=g[a.w], gb=g[b.w]; if(!ga||!gb) return false; for(const x of ga) if(gb.has(x)) return true; return false; };
+}
+const STAGES = {
+  1:{name:"본 단어", tag:"본", cls:"", short:"뜻"},
+  2:{name:"유의어", tag:"유", cls:"syn", short:"유의어"},
+  3:{name:"반의어", tag:"반", cls:"ant", short:"반의어"}
+};
+
+/* ───────── 저장 ───────── */
+const LS = {
+  get(k,d){ try{ const v=localStorage.getItem(k); return v?JSON.parse(v):d; }catch(e){ return d; } },
+  set(k,v){ try{ localStorage.setItem(k,JSON.stringify(v)); }catch(e){} }
+};
+let S = LS.get("vq.state",{name:"",cls:"",unit:null,progress:{}});
+const save = ()=>LS.set("vq.state",S);
+const key = ()=> `${S.unit}|${S.name}`;
+const prog = ()=> (S.progress[key()] ||= {});
+
+/* ───────── 유틸 ───────── */
+const $ = s=>document.querySelector(s);
+const app = $("#app");
+const esc = s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const shuffle = a=>{ a=a.slice(); for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; };
+const pick = a=>a[Math.floor(Math.random()*a.length)];
+function toast(msg){ const t=$("#toast"); t.textContent=msg; t.hidden=false; clearTimeout(toast._t); toast._t=setTimeout(()=>t.hidden=true,1800); }
+async function copyText(text, el){
+  try{ await navigator.clipboard.writeText(text); toast("복사했어요"); }
+  catch(e){ if(el){ const r=document.createRange(); r.selectNodeContents(el); const s=getSelection(); s.removeAllRanges(); s.addRange(r);} toast("선택된 글자를 길게 눌러 복사하세요"); }
+}
+function hash(str){ let h=5381; for(let i=0;i<str.length;i++) h=((h<<5)+h+str.charCodeAt(i))>>>0; return h.toString(36); }
+function b64e(str){ return btoa(unescape(encodeURIComponent(str))).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,""); }
+function b64d(s){ s=s.replace(/-/g,"+").replace(/_/g,"/"); while(s.length%4) s+="="; return decodeURIComponent(escape(atob(s))); }
+
+/* ───────── 문제 만들기 ───────── */
+function stageWords(unit, st){ const L=UNITS[unit].list; return st===3 ? L.filter(w=>w.ant.length) : L; }
+function makeQuestion(unit, w, st){
+  const U=UNITS[unit], others=U.list.filter(o=>!U.near(w,o));
+  const own = new Set([...w.syn, ...w.ant, w.w]);
+  if(st===1){
+    if(Math.random()<.5){
+      const ds = shuffle(others).slice(0,3).map(o=>o.ko);
+      return {id:w.id, prompt:"알맞은 뜻을 고르세요", big:w.w, bigKr:false, pos:w.pos, answer:w.ko, options:shuffle([w.ko,...ds]), en:false};
+    }
+    const ds = shuffle(others).slice(0,3).map(o=>o.w);
+    return {id:w.id, prompt:"뜻에 맞는 단어를 고르세요", big:w.ko, bigKr:true, pos:w.pos, answer:w.w, options:shuffle([w.w,...ds]), en:true};
+  }
+  const isSyn = st===2;
+  const answer = pick(isSyn?w.syn:w.ant);
+  const traps = isSyn ? w.ant : w.syn;
+  let pool = []; others.forEach(o=>(isSyn?o.syn:o.ant).forEach(x=>pool.push(x)));
+  pool = [...new Set(pool)].filter(x=>!own.has(x));
+  const ds = [];
+  if(traps.length && Math.random()<.6) ds.push(pick(traps));
+  for(const x of shuffle(pool)){ if(ds.length>=3) break; if(!ds.includes(x)) ds.push(x); }
+  return {id:w.id, prompt: isSyn?"다음 단어의 유의어는?":"다음 단어의 반의어는?", big:w.w, bigKr:false, pos:w.pos, sub:w.ko, answer, options:shuffle([answer,...ds]), en:true};
+}
+
+/* ───────── 시트로 전송 ───────── */
+function payloadForSheet(){
+  const p=prog(), U=UNITS[S.unit], stages={};
+  [1,2,3].forEach(s=>{ if(p[s]) stages[s]={score:p[s].score,total:p[s].total,wrong:p[s].wrong.map(id=>U.list[id-1].w)}; });
+  return {code:resultCode(), name:S.name, cls:S.cls||"", unit:S.unit, stages};
+}
+async function sendResult(){
+  const p=prog();
+  const done=[1,2,3].filter(s=>p[s]).length;
+  if(!SCRIPT_URL || !done) return;
+  p.sending=true; p.sendErr=false; render();
+  const body=JSON.stringify(payloadForSheet());
+  let ok=false;
+  try{
+    const r=await fetch(SCRIPT_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body});
+    const j=await r.json().catch(()=>({ok:true}));
+    ok = j.ok!==false;
+  }catch(e){
+    try{ await fetch(SCRIPT_URL,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain;charset=utf-8"},body}); ok=true; }catch(e2){ ok=false; }
+  }
+  p.sending=false;
+  if(ok){ p.sent=done; } else { p.sendErr=true; }
+  save(); render();
+}
+
+/* ───────── 화면 ───────── */
+let view = {name:"start"};
+let isTeacher = false;
+function go(v){ view=v; render(); window.scrollTo(0,0); }
+
+function header(){
+  return `<div class="top"><div class="brand">단어 3단계</div>
+    <div class="row">${isTeacher?`<button class="linkbtn" data-act="teacher">선생님 화면</button>`:""}
+    ${S.name&&view.name!=="start"?`<button class="linkbtn" data-act="start">${esc(S.name)} · 바꾸기</button>`:""}</div></div>`;
+}
+
+function render(){
+  const v=view.name;
+  if(v==="start") return renderStart();
+  if(v==="home") return renderHome();
+  if(v==="study") return renderStudy();
+  if(v==="quiz") return renderQuiz();
+  if(v==="review") return renderReview();
+  if(v==="teacher") return renderTeacher();
+}
+
+function renderStart(){
+  app.innerHTML = `${header()}
+  <div style="display:flex;flex-direction:column;gap:6px">
+    <h1>공통영어2 핵심 어휘 시험</h1>
+    <p class="muted">본 단어를 외우고 시험을 보면 유의어, 그다음 반의어가 열려요. 마지막에 결과 코드를 선생님께 보내 주세요.</p>
+  </div>
+  <div class="panel">
+    <div class="field"><label class="label" for="nm">이름</label><input type="text" id="nm" maxlength="20" placeholder="예: 김민준" value="${esc(S.name)}"></div>
+    <div class="field"><label class="label" for="cl">반 · 학교 (선택)</label><input type="text" id="cl" maxlength="20" placeholder="예: 고1 A반" value="${esc(S.cls||"")}"></div>
+    <div class="field"><span class="label">단원</span>
+      <div class="units">${Object.entries(UNITS).map(([k,u])=>`
+        <button class="unit" data-unit="${k}" aria-pressed="${S.unit===k}">
+          <span class="small muted">${esc(u.sub)} · ${u.list.length}단어</span>
+          <span class="en">${esc(u.title)}</span>
+        </button>`).join("")}</div></div>
+    <button class="btn block" id="startBtn">시작하기</button>
+    <p class="small muted" id="startMsg"></p>
+  </div>`;
+  app.querySelectorAll(".unit").forEach(b=>b.onclick=()=>{ S.unit=b.dataset.unit; app.querySelectorAll(".unit").forEach(x=>x.setAttribute("aria-pressed", x===b)); });
+  $("#startBtn").onclick=()=>{
+    const nm=$("#nm").value.trim();
+    if(!nm){ $("#startMsg").textContent="이름을 입력해 주세요. 선생님이 결과를 이 이름으로 받아요."; $("#nm").focus(); return; }
+    if(!S.unit){ $("#startMsg").textContent="공부할 단원을 골라 주세요."; return; }
+    S.name=nm; S.cls=$("#cl").value.trim(); save(); go({name:"home"});
+  };
+}
+
+function stageStatus(st){
+  const p=prog();
+  if(p[st]) return {state:"done", text:`완료 ${p[st].score}/${p[st].total}`};
+  if(st===1 || p[st-1]) return {state:"open", text:"학습 → 시험"};
+  return {state:"locked", text:`${STAGES[st-1].name} 시험 후 열림`};
+}
+
+function renderHome(){
+  const U=UNITS[S.unit], p=prog();
+  const doneCount=[1,2,3].filter(s=>p[s]).length;
+  app.innerHTML = `${header()}
+  <div style="display:flex;flex-direction:column;gap:4px">
+    <span class="small muted">${esc(U.sub)}</span><h1>${esc(U.title)}</h1>
+  </div>
+  <div class="rail">${[1,2,3].map(st=>{ const s=stageStatus(st);
+    return `<button class="step s${st} ${s.state}" data-stage="${st}" ${s.state==="locked"?"disabled":""}>
+      <span class="badge">${STAGES[st].tag}</span><span class="name">${st}단계 ${STAGES[st].name}</span><span class="st">${s.text}</span></button>`;}).join("")}</div>
+  ${resultPanel(doneCount)}`;
+  app.querySelectorAll(".step").forEach(b=>b.onclick=()=>{ const st=+b.dataset.stage; go({name:"study", stage:st, hide:false, filter:"all"}); });
+  bindHeader(); bindResult();
+}
+
+function resultCode(){
+  const p=prog(), r={};
+  [1,2,3].forEach(s=>{ if(p[s]) r[s]=[p[s].score,p[s].total,p[s].wrong]; });
+  const payload={v:1,n:S.name,c:S.cls||"",u:S.unit,r,t:Date.now()};
+  const js=JSON.stringify(payload);
+  return "VOCA-"+b64e(js)+"."+hash(js);
+}
+function resultMessage(){
+  const p=prog(), U=UNITS[S.unit];
+  const lines=[`[단어시험] ${S.name}${S.cls?" ("+S.cls+")":""} · ${S.unit}과`];
+  lines.push([1,2,3].map(s=>`${STAGES[s].name} ${p[s]?p[s].score+"/"+p[s].total:"-"}`).join(" · "));
+  lines.push("결과코드: "+resultCode());
+  return lines.join("\n");
+}
+function resultPanel(doneCount){
+  if(!doneCount) return `<div class="panel"><h2>결과 보내기</h2><p class="muted">1단계 시험을 마치면 결과가 선생님께 전송돼요.</p></div>`;
+  const p=prog(), all=doneCount===3;
+  if(SCRIPT_URL){
+    let status;
+    if(p.sending) status=`<div class="notice">선생님께 보내는 중…</div>`;
+    else if(p.sent===doneCount) status=`<div class="notice">${doneCount}단계까지 결과가 선생님께 전송됐어요.${all?" 수고했어요!":""}</div>`;
+    else if(p.sendErr) status=`<div class="notice" style="background:var(--ant-soft)">전송하지 못했어요. 인터넷 연결을 확인하고 다시 보내기를 누르세요. 계속 안 되면 아래 내용을 복사해서 선생님께 카톡으로 보내세요.</div>`;
+    else status=`<div class="notice">아직 전송되지 않았어요.</div>`;
+    return `<div class="panel"><h2>${all?"모든 단계 완료!":"결과 전송"}</h2>${status}
+      ${p.sent!==doneCount&&!p.sending?`<button class="btn block" id="resend">다시 보내기</button>`:""}
+      ${p.sendErr?`<div class="codebox" id="codebox">${esc(resultMessage())}</div><button class="btn ghost block" id="copyRes">결과 복사하기</button>`:""}</div>`;
+  }
+  return `<div class="panel"><h2>${all?"모든 단계 완료! 결과를 보내 주세요":"결과 보내기"}</h2>
+    <p class="muted small">${all?"아래 내용을 복사해서 선생님께 카톡이나 문자로 보내세요.":"3단계를 모두 마치고 보내는 게 원칙이에요. 중간 결과도 보낼 수 있어요."}</p>
+    <div class="codebox" id="codebox">${esc(resultMessage())}</div>
+    <button class="btn block" id="copyRes">결과 복사하기</button></div>`;
+}
+function bindResult(){ const b=$("#copyRes"); if(b) b.onclick=()=>copyText(resultMessage(), $("#codebox")); const r=$("#resend"); if(r) r.onclick=sendResult; }
+function bindHeader(){ app.querySelectorAll("[data-act]").forEach(b=>b.onclick=()=>{ const a=b.dataset.act; if(a==="start") go({name:"start"}); if(a==="teacher") go({name:"teacher"}); if(a==="home") go({name:"home"}); }); }
+
+function renderStudy(){
+  const st=view.stage, U=UNITS[S.unit], meta=STAGES[st], p=prog();
+  const words=stageWords(S.unit, st);
+  const hide=view.hide;
+  const cover=(txt,cls="")=> hide?`<span class="cover ${cls}">${esc(txt)}</span>`:esc(txt);
+  const cards=words.map(w=>{
+    let body="";
+    if(st===1) body=`<span class="ko">${cover(w.ko)}</span><span class="ex">${esc(w.ex)}</span>`;
+    if(st>=2) body=`<span class="ko small muted">${esc(w.ko)}</span><div class="chips"><span class="tag syn">유</span>${w.syn.map(x=>`<span class="chip syn">${st===2?cover(x):esc(x)}</span>`).join("")}</div>`;
+    if(st===3) body+=`<div class="chips"><span class="tag ant">반</span>${w.ant.map(x=>`<span class="chip ant">${cover(x)}</span>`).join("")}</div>`;
+    return `<button class="card" data-id="${w.id}"><span class="no">${String(w.id).padStart(3,"0")}</span>
+      <span class="hw">${esc(w.w)}<span class="pos">${esc(w.pos)}</span></span><span class="body">${body}</span></button>`;
+  }).join("");
+  const done=p[st];
+  app.innerHTML=`${header()}
+  <div class="row" style="justify-content:space-between"><button class="linkbtn" data-act="home">← 단계 목록</button><span class="small muted">${words.length}단어</span></div>
+  <div style="display:flex;flex-direction:column;gap:4px"><span class="label">${st}단계 · 학습</span><h1>${meta.name} 외우기</h1>
+    <p class="muted small">${st===1?"단어와 뜻을 외우세요.":st===2?"뜻을 떠올리며 유의어를 외우세요. 반의어와 헷갈리지 않게 주의!":"반의어를 외우세요. 시험에는 유의어가 함정 보기로 나와요. 반의어가 없는 단어는 빠져 있어요."} '가리기'를 켜고 카드를 눌러 스스로 확인해 보세요.</p></div>
+  <div class="toolbar"><div class="seg" role="group" aria-label="보기 방식">
+    <button id="showB" aria-pressed="${!hide}">모두 보기</button><button id="hideB" aria-pressed="${hide}">${meta.short} 가리기</button></div></div>
+  <div class="cards">${cards}</div>
+  <div class="panel">
+    ${done?`<p><b>이미 시험을 봤어요.</b> 점수 ${done.score}/${done.total}. 시험은 한 번만 기록돼요.</p><button class="btn ghost block" data-review="1">틀린 단어 다시 보기</button>`
+      :`<p class="small muted">준비됐으면 시험을 시작하세요. 시험 중에는 학습 카드를 볼 수 없고, <b>제출 결과는 한 번만 기록</b>돼요.</p><button class="btn ${meta.cls} block" id="goQuiz">${meta.name} 시험 시작 (${words.length}문제)</button>`}
+  </div>`;
+  bindHeader();
+  $("#showB").onclick=()=>{view.hide=false;render();};
+  $("#hideB").onclick=()=>{view.hide=true;render();};
+  app.querySelectorAll(".card").forEach(c=>c.onclick=()=>{ c.querySelectorAll(".cover").forEach(x=>x.classList.toggle("cover")); });
+  const g=$("#goQuiz"); if(g) g.onclick=()=>startQuiz(st);
+  const rv=app.querySelector("[data-review]"); if(rv) rv.onclick=()=>go({name:"review", stage:st});
+}
+
+function startQuiz(st){
+  const qs=shuffle(stageWords(S.unit,st)).map(w=>makeQuestion(S.unit,w,st));
+  view={name:"quiz", stage:st, qs, i:0, wrong:[], answered:null};
+  LS.set("vq.quiz."+key(), {st}); render(); window.scrollTo(0,0);
+}
+
+function renderQuiz(){
+  const {stage:st, qs, i}=view, q=qs[i], meta=STAGES[st];
+  const a=view.answered;
+  app.innerHTML=`<div class="qhead"><span class="label">${st}단계 ${meta.name} 시험</span><span class="small muted">${i+1} / ${qs.length}</span></div>
+  <div class="bar ${meta.cls}"><i style="width:${(i/qs.length)*100}%"></i></div>
+  <div class="qcard"><span class="prompt">${esc(q.prompt)}</span>
+    <span class="big ${q.bigKr?"kr":""}">${esc(q.big)}</span>
+    ${q.sub?`<span class="small muted">${esc(q.sub)}</span>`:`<span class="small muted">${esc(q.pos)}</span>`}</div>
+  <div class="opts">${q.options.map((o,k)=>{
+    let cls=""; if(a){ if(o===q.answer) cls="right"; else if(o===a) cls="wrong"; }
+    return `<button class="opt ${q.en?"en":""} ${cls}" data-o="${k}" ${a?"disabled":""}><span class="k">${k+1}</span><span>${esc(o)}</span></button>`;}).join("")}</div>
+  <div class="feedback ${a?(a===q.answer?"ok":"no"):""}">${a?(a===q.answer?"정답!":"오답 · 정답은 "+esc(q.answer)):""}</div>
+  ${a&&a!==q.answer?`<button class="btn block ${meta.cls}" id="next">${i+1<qs.length?"다음 문제":"결과 보기"}</button>`:""}`;
+  app.querySelectorAll(".opt").forEach(b=>b.onclick=()=>{
+    if(view.answered) return;
+    const o=q.options[+b.dataset.o]; view.answered=o;
+    if(o!==q.answer && !view.wrong.includes(q.id)) view.wrong.push(q.id);
+    render();
+    if(o===q.answer) setTimeout(next, 650);
+  });
+  const n=$("#next"); if(n){ n.onclick=next; n.focus(); }
+}
+function next(){
+  if(view.name!=="quiz") return;
+  view.answered=null; view.i++;
+  if(view.i>=view.qs.length){
+    const st=view.stage, total=view.qs.length;
+    prog()[st]={score:total-view.wrong.length,total,wrong:view.wrong.sort((a,b)=>a-b),at:Date.now()};
+    save(); go({name:"review", stage:st, fresh:true}); sendResult(); return;
+  }
+  render();
+}
+document.addEventListener("keydown",e=>{
+  if(view.name!=="quiz") return;
+  if(!view.answered && /^[1-4]$/.test(e.key)){ const b=app.querySelector(`.opt[data-o="${+e.key-1}"]`); if(b) b.click(); }
+  else if(view.answered && e.key==="Enter"){ e.preventDefault(); next(); }
+});
+
+function renderReview(){
+  const st=view.stage, meta=STAGES[st], r=prog()[st], U=UNITS[S.unit];
+  const wl=r.wrong.map(id=>U.list[id-1]);
+  const val=w=> st===1?w.ko: st===2?w.syn.join(", "):w.ant.join(", ");
+  const nextSt = st<3?st+1:null;
+  app.innerHTML=`${header()}
+  <div class="panel"><span class="label">${st}단계 ${meta.name} 결과</span>
+    <div class="score"><b>${r.score}</b><span class="muted">/ ${r.total}</span></div>
+    <p class="muted small">${wl.length?`틀린 단어 ${wl.length}개는 학원 재시험에 나와요. 지금 한 번 더 보세요.`:"모두 맞혔어요!"}</p>
+    ${wl.length?`<div class="wrongs">${wl.map(w=>`<div><span class="w">${esc(w.w)}</span><span>${st>1?`<span class="small muted">${esc(w.ko)}</span><br>`:""}${esc(val(w))}</span></div>`).join("")}</div>`:""}
+  </div>
+  ${nextSt?`<button class="btn ${STAGES[nextSt].cls} block" id="goNext">${nextSt}단계 ${STAGES[nextSt].name} 학습하러 가기</button>`:""}
+  ${SCRIPT_URL?`<p class="small muted" style="text-align:center">${prog().sending?"선생님께 결과를 보내는 중…":prog().sendErr?"전송 실패 · 단계 목록에서 다시 보내 주세요":prog().sent?"결과가 선생님께 전송됐어요":""}</p>`:""}
+  <button class="btn ghost block" data-act="home">단계 목록${st===3?" · 결과 확인":""}</button>`;
+  bindHeader();
+  const g=$("#goNext"); if(g) g.onclick=()=>go({name:"study", stage:nextSt, hide:false});
+}
+
+/* ───────── 선생님 화면 ───────── */
+let T = LS.get("vq.teacher",{raw:""});
+function parseCodes(raw){
+  const out=[]; const seen=new Set();
+  (raw.match(/VOCA-[A-Za-z0-9_-]+\.[a-z0-9]+/g)||[]).forEach(code=>{
+    if(seen.has(code)) return; seen.add(code);
+    try{ const [b,h]=code.slice(5).split("."); const js=b64d(b); const d=JSON.parse(js); d.ok = hash(js)===h; if(UNITS[d.u]) out.push(d); }catch(e){}
+  });
+  // 같은 학생·단원은 가장 최근 것만
+  const m=new Map(); out.forEach(d=>{ const k=d.n+"|"+d.c+"|"+d.u; if(!m.has(k)||m.get(k).t<d.t) m.set(k,d); });
+  return [...m.values()].sort((a,b)=>a.u.localeCompare(b.u)||a.n.localeCompare(b.n,"ko"));
+}
+function pct(r){ if(!r) return null; return Math.round(r[0]/r[1]*100); }
+function pillFor(r){ if(!r) return `<span class="muted">-</span>`; const p=pct(r); return `<span class="pill ${p<70?"lo":p<90?"mid":"hi"}">${r[0]}/${r[1]}</span>`; }
+
+function sheetData(d){
+  const U=UNITS[d.u]; const sec=[];
+  [1,2,3].forEach(s=>{ const r=d.r[s]; if(r&&r[2].length) sec.push({s, words:r[2].map(id=>U.list[id-1])}); });
+  return sec;
+}
+function renderTeacher(){
+  const list=parseCodes(T.raw);
+  const sel = view.sel!=null ? list[view.sel] : null;
+  app.innerHTML=`<div class="top"><div class="brand">단어 3단계 · 선생님</div><button class="linkbtn" data-act="start">학생 화면</button></div>
+  <div style="display:flex;flex-direction:column;gap:4px"><h1>결과 모으기</h1>
+  <p class="muted small">학생들이 보낸 카톡 메시지를 통째로 붙여 넣으세요. 여러 명을 한 번에 넣어도 돼요. 붙여 넣은 내용은 이 기기에만 저장돼요.</p></div>
+  ${SCRIPT_URL?`<div class="panel"><div class="field"><label class="label" for="tkey">시트 비밀번호</label><input type="text" id="tkey" value="${esc(T.key||"")}" autocomplete="off"></div>
+    <button class="btn" id="loadSheet">스프레드시트에서 불러오기</button><p class="small muted" id="loadMsg">${T.loadedAt?"마지막으로 불러온 시각 "+esc(T.loadedAt):"학생 제출 결과를 시트에서 가져와요."}</p></div>
+  <p class="label">또는 카톡으로 받은 메시지 붙여 넣기</p>`:""}
+  <textarea id="raw" placeholder="[단어시험] 김민준 · 3과&#10;본 단어 44/50 · 유의어 30/50 · 반의어 20/36&#10;결과코드: VOCA-...">${esc(T.raw)}</textarea>
+  <div class="row"><button class="btn" id="parse">불러오기</button><button class="btn ghost" id="clear">비우기</button></div>
+  ${list.length?`<div class="tbl-wrap"><table><thead><tr><th>이름</th><th>반</th><th>단원</th><th>본 단어</th><th>유의어</th><th>반의어</th><th>재시험</th><th></th></tr></thead><tbody>
+    ${list.map((d,i)=>{ const nW=[1,2,3].reduce((a,s)=>a+(d.r[s]?d.r[s][2].length:0),0);
+      return `<tr><td><b>${esc(d.n)}</b>${d.ok?"":` <span class="pill warn" title="코드가 수정됐을 수 있어요">확인</span>`}</td><td>${esc(d.c||"-")}</td><td>${d.u}과</td>
+      <td>${pillFor(d.r[1])}</td><td>${pillFor(d.r[2])}</td><td>${pillFor(d.r[3])}</td><td class="n">${nW}개</td>
+      <td><button class="linkbtn" data-sel="${i}">시험지</button></td></tr>`;}).join("")}
+  </tbody></table></div>
+  <div class="row"><button class="btn" id="dlAll">전체 재시험지 내려받기 (${list.length}명)</button><button class="btn ghost" id="cpAll">오답 요약 복사</button></div>`
+  : `<p class="muted small">아직 불러온 결과가 없어요.</p>`}
+  ${sel?renderSheetPreview(sel):""}`;
+  bindHeader();
+  $("#parse").onclick=()=>{ T.raw=$("#raw").value; LS.set("vq.teacher",T); view.sel=null; render(); const n=parseCodes(T.raw).length; toast(n?`${n}명 불러왔어요`:"결과 코드를 찾지 못했어요"); };
+  const ls=$("#loadSheet"); if(ls) ls.onclick=async()=>{
+    const k=$("#tkey").value.trim(); if(!k){ $("#loadMsg").textContent="비밀번호를 입력하세요."; return; }
+    T.key=k; LS.set("vq.teacher",T); $("#loadMsg").textContent="불러오는 중…";
+    try{
+      const r=await fetch(SCRIPT_URL+"?key="+encodeURIComponent(k)); const j=await r.json();
+      if(!j.ok){ $("#loadMsg").textContent = j.error==="key"?"비밀번호가 맞지 않아요. Apps Script의 TEACHER_KEY와 같게 입력하세요.":"불러오지 못했어요: "+j.error; return; }
+      T.raw=j.codes.join("\n"); T.loadedAt=new Date().toLocaleString("ko-KR"); LS.set("vq.teacher",T); view.sel=null; render();
+      toast(`${parseCodes(T.raw).length}명 결과를 불러왔어요`);
+    }catch(e){ $("#loadMsg").textContent="불러오지 못했어요. 웹 앱 주소와 배포 권한(모든 사용자)을 확인하세요."; }
+  };
+  $("#clear").onclick=()=>{ T.raw=""; LS.set("vq.teacher",T); view.sel=null; render(); };
+  app.querySelectorAll("[data-sel]").forEach(b=>b.onclick=()=>{ view.sel=+b.dataset.sel; render(); $("#sheetPrev")?.scrollIntoView({behavior:"smooth"}); });
+  const da=$("#dlAll"); if(da) da.onclick=()=>downloadSheets(list, "재시험지_전체.html");
+  const ca=$("#cpAll"); if(ca) ca.onclick=()=>copyText(summaryText(list));
+  const ds=$("#dlOne"); if(ds) ds.onclick=()=>downloadSheets([sel], `재시험지_${sel.n}_${sel.u}과.html`);
+}
+function renderSheetPreview(d){
+  const sec=sheetData(d);
+  return `<div class="sheet" id="sheetPrev"><div class="top"><h2>${esc(d.n)} · ${d.u}과 재시험지</h2></div>
+    ${sec.length?sec.map(x=>`<h3>${x.s}단계 ${STAGES[x.s].name} (${x.words.length})</h3><ol>${x.words.map(w=>`<li><b>${esc(w.w)}</b> <span class="muted small">${esc(x.s===1?w.ko:x.s===2?w.syn.join(", "):w.ant.join(", "))}</span></li>`).join("")}</ol>`).join("")
+    :`<p class="muted">틀린 단어가 없어요.</p>`}
+    <button class="btn" id="dlOne">이 학생 시험지 내려받기</button></div>`;
+}
+function summaryText(list){
+  return list.map(d=>{ const U=UNITS[d.u];
+    const parts=[1,2,3].map(s=>{ const r=d.r[s]; if(!r) return `${STAGES[s].name}: 미응시`; return `${STAGES[s].name} ${r[0]}/${r[1]}`+(r[2].length?` (${r[2].map(id=>U.list[id-1].w).join(", ")})`:""); });
+    return `${d.n}${d.c?" ("+d.c+")":""} · ${d.u}과\n`+parts.join("\n"); }).join("\n\n");
+}
+function sheetHTML(list){
+  const h=s=>esc(s);
+  const page=(d)=>{ const sec=sheetData(d); let n=0;
+    const qs=sec.map(x=>{
+      const rows=x.words.map(w=>{ n++;
+        if(x.s===1) return `<tr><td class="q">${n}</td><td class="w">${h(w.w)}</td><td class="blank">뜻: </td></tr>`;
+        const k=x.s===2?"유의어":"반의어";
+        return `<tr><td class="q">${n}</td><td class="w">${h(w.w)}<div class="ko">${h(w.ko)}</div></td><td class="blank">${k} (${(x.s===2?w.syn:w.ant).length}개): </td></tr>`; }).join("");
+      return `<h3>${x.s}단계 · ${STAGES[x.s].name}</h3><table>${rows}</table>`; }).join("");
+    let m=0;
+    const key=sec.map(x=>`<h3>${x.s}단계 · ${STAGES[x.s].name}</h3><ol start="${m+1}">${x.words.map(w=>{m++; return `<li><b>${h(w.w)}</b> — ${h(x.s===1?w.ko:x.s===2?w.syn.join(", "):w.ant.join(", "))}</li>`;}).join("")}</ol>`).join("");
+    return `<section class="pg"><header><div><b>${h(UNITS[d.u].sub)} 재시험</b><br><span>${h(UNITS[d.u].title)}</span></div><div class="nm">이름: ${h(d.n)} ${d.c?"("+h(d.c)+")":""}<br>점수: ______ / ${n}</div></header>
+      ${n?qs:"<p>틀린 단어가 없습니다. 재시험 면제.</p>"}</section>
+      ${n?`<section class="pg key"><header><div><b>정답지</b> · ${h(d.n)} · ${d.u}과</div></header>${key}</section>`:""}`;
+  };
+  return `<!doctype html><html lang="ko"><head><meta charset="utf-8"><title>재시험지</title><style>
+  body{font-family:"Malgun Gothic","Apple SD Gothic Neo",sans-serif;color:#111;margin:0;padding:24px}
+  .pg{max-width:720px;margin:0 auto 40px;page-break-after:always}
+  header{display:flex;justify-content:space-between;border-bottom:2px solid #111;padding-bottom:8px;margin-bottom:12px;font-size:14px}
+  .nm{text-align:right}
+  h3{font-size:15px;margin:18px 0 6px}
+  table{width:100%;border-collapse:collapse}
+  td{border-bottom:1px solid #bbb;padding:10px 6px;vertical-align:top;font-size:15px}
+  .q{width:28px;color:#666}.w{width:42%;font-weight:bold;font-size:17px}.ko{font-weight:normal;font-size:12px;color:#555}
+  .blank{color:#888;font-size:13px}
+  .key li{margin:4px 0;font-size:14px}
+  @media print{body{padding:0}.pg{margin:0 auto}}
+  </style></head><body>${list.map(page).join("")}</body></html>`;
+}
+function downloadSheets(list, filename){
+  const html=sheetHTML(list);
+  try{
+    const blob=new Blob([html],{type:"text/html;charset=utf-8"});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement("a"); a.href=url; a.download=filename; document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url),4000);
+    toast("내려받은 파일을 열어 인쇄하세요");
+  }catch(e){ copyText(summaryText(list)); toast("내려받기가 안 돼 오답 요약을 복사했어요"); }
+}
+/* ───────── 시작 ───────── */
+function boot(){
+  Object.values(S.progress||{}).forEach(p=>{ if(p.sending){ p.sending=false; p.sendErr=true; } });
+  if(location.hash==="#teacher") isTeacher=true;
+  if(S.name && S.unit && !isTeacher) view={name:"home"};
+  if(isTeacher) view={name:"teacher"};
+  render();
+}
+boot();
+window.addEventListener("hashchange",()=>{ if(location.hash==="#teacher"){ isTeacher=true; go({name:"teacher"}); } });
+</script>
+
+</body>
+</html>
